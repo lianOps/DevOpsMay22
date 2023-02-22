@@ -28,7 +28,25 @@ def main():
         backlog_per_instance = calc_backlog_per_instance()
         logger.info(f'backlog per instance: {backlog_per_instance}')
 
-        # TODO send the backlog_per_instance metric to cloudwatch
+        # send the backlog_per_instance metric to cloudwatch
+        response = cw_client.put_metric_data(
+            Namespace='liancloudwatch',
+            MetricData=[{
+                'MetricName': 'BacklogPerInstance',
+                'Dimensions': [
+                    {
+                        'Name': 'QueueName',
+                        'Value': bot_to_worker_queue_name
+                    },
+                    {
+                        'Name': 'AutoScalingGroupName',
+                        'Value': autoscaling_group_name
+                    }
+                ],
+                'Value': backlog_per_instance
+            }]
+        )
+        logger.info(f'CloudWatch response: {response}')
 
         time.sleep(60)
 
@@ -41,7 +59,8 @@ if __name__ == '__main__':
     autoscaling_group_name = config.get('autoscaling_group_name')
 
     sqs = boto3.resource('sqs')
-    workers_queue = sqs.get_queue_by_name(QueueName=bot_to_worker_queue_name)
+    workers_queue = sqs.get_queue_by_name(
+        QueueName=bot_to_worker_queue_name)
     asg_client = boto3.client('autoscaling')
 
     main()

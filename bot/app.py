@@ -91,8 +91,10 @@ def get_telegram_token_secret():
         SecretId=config.get('telegram_token_secret_name')
     )
 
-    # TODO extract the Telegram token value from secret_value object and return it
-    return
+    secret_dict = json.loads(secret_value['SecretString'])
+    telegram_token = secret_dict.get('telegram_token')
+
+    return telegram_token
 
 
 if __name__ == '__main__':

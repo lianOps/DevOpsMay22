@@ -16,10 +16,17 @@ queue = sqs.get_queue_by_name(
 
 
 def process_msg(msg):
-    search_download_youtube_video(msg)
+    video_file_path = search_download_youtube_video(msg)
+    # upload the video to S3
+    s3 = boto3.resource('s3', region_name=config.get('aws_region'))
+    bucket = s3.Bucket(config.get('s3_bucket_name'))
 
-    # TODO upload the downloaded video to your S3 bucket
-
+    try:
+        with open(video_file_path, 'rb') as f:
+            bucket.upload_fileobj(f, key)
+        logger.info(f'uploaded video to S3 bucket: {bucket.name}/{key}')
+    except ClientError as e:
+        logger.exception(f"couldn't upload video to S3: {e}")
 
 def main():
     while True:

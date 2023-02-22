@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="bot" type="PythonConfigurationType" factoryName="Python">
-    <module name="TelegramAI" />
+    <module name="DevOpsMay22" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />
     <envs>
